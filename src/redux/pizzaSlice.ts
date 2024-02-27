@@ -5,25 +5,27 @@ const pizzaSlice = createSlice({
   name: "pizza",
   initialState: {
     orders: [] as OrderDetails[],
-    orderId: 0,
+    orderIdCounter: 0,
   },
   reducers: {
     placeOrder: (state, action) => {
       state.orders.push({
-        orderId: state.orderId,
+        orderId: `00${state.orderIdCounter + 1}`,
         ...action.payload,
         stage: "Order Placed",
-        startTime: new Date(),
+        time: 0,
+        prevTime: 0
       });
-      state.orderId += 1;
+      state.orderIdCounter += 1;
     },
 
     updateOrderStage: (state, action) => {
-      state.orders = state.orders.map((order) =>
-        order.orderId === action.payload.orderId
-          ? { ...order, stage: action.payload.stage, prevTime: order.timer }
-          : order
-      );
+        const { orderId, stage } = action.payload;
+        const orderToUpdate = state.orders.find((order) => order.orderId === orderId);
+        if(orderToUpdate) {
+            orderToUpdate.stage = stage;
+            orderToUpdate.prevTime = orderToUpdate.time;
+        }
     },
 
     cancelOrder: (state, action) => {
@@ -31,7 +33,11 @@ const pizzaSlice = createSlice({
     },
 
     updateOrderTime: (state, action) => {
-        state.orders = state.orders.map((order) => order.orderId === action.payload.orderId ? {...order, timer: action.payload.timer}: order)
+        const { orderId, time} = action.payload;
+        const orderToUpdate = state.orders.find((order) => order.orderId === orderId);
+        if(orderToUpdate) {
+            orderToUpdate.time = time;
+        }
     }
 
   },

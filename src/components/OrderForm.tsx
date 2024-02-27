@@ -1,20 +1,33 @@
+import type { RootState } from "../redux/store";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { placeOrder } from "../redux/pizzaSlice";
 
 const OrderForm = () => {
-  const typesArr = ["Veg", "Non-Veg"];
-  const sizesArr = ["Large", "Medium", "Small"];
-  const basesArr = ["Thin", "Thick"];
+  
+  const dispatch = useDispatch();
+  const orders = useSelector((state: RootState) => state.pizza.orders);
+  const [order, setOrder] = useState({ type: "", size: "", base: "" });
 
-  const [types, setTypes] = useState("");
-  const [sizes, setSizes] = useState("");
-  const [bases, setBases] = useState("");
-
-  const handleSubmit = () => {
-    // Do something with selected values
-    console.log("Selected Type:", types);
-    console.log("Selected Size:", sizes);
-    console.log("Selected Base:", bases);
+  const handleInputChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const {name, value} = event.target;
+    setOrder((prevOrder) => ({...prevOrder, [name]: value}));
   };
+
+  const handlePlaceOrder = () => {
+    if(orders.length > 10) {
+      if(order.type && order.size && order.base) {
+        dispatch(placeOrder(order));
+        setOrder({type:"", size:"", base:""});
+      } else {
+        alert('Please fill in all fields');
+      } 
+    } else {
+      alert('Not taking any order for now')
+    }
+  };
+
+
 
   return (
     <div className="flex justify-between space-x-4 p-4">
@@ -22,48 +35,46 @@ const OrderForm = () => {
         <label className="block font-bold mb-2">Type:</label>
         <select
           className="w-full p-2 border rounded"
-          value={types}
-          onChange={(e) => setTypes(e.target.value)}
+          name="type"
+          value={order.type}
+          onChange={handleInputChange}
         >
           <option value="">Select Type</option>
-          {typesArr.map((type, index) => (
-            <option key={index} value={type}>
-              {type}
-            </option>
-          ))}
+          <option value="Veg">Veg</option>
+          <option value="Non-Veg">Non-Veg</option>
         </select>
       </div>
       <div className="w-1/4">
         <label className="block font-bold mb-2">Size:</label>
         <select
           className="w-full p-2 border rounded"
-          value={sizes}
-          onChange={(e) => setSizes(e.target.value)}
+          name="size"
+          value={order.size}
+          onChange={handleInputChange}
         >
           <option value="">Select Size</option>
-          {sizesArr.map((size, index) => (
-            <option key={index} value={size}>
-              {size}
-            </option>
-          ))}
+          <option value="Small">Small</option>
+          <option value="Medium">Medium</option>
+          <option value="Large">Large</option>
         </select>
       </div>
       <div className="w-1/4">
         <label className="block font-bold mb-2">Base:</label>
         <select
           className="w-full p-2 border rounded"
-          value={bases}
-          onChange={(e) => setBases(e.target.value)}
+          name="base"
+          value={order.base}
+          onChange={handleInputChange}
         >
           <option value="">Select Base</option>
-          {basesArr.map((base, index) => (
-            <option key={index} value={base}>
-              {base}
-            </option>
-          ))}
+          <option value="Thin">Thin</option>
+          <option value="Thick">Thick</option>
         </select>
       </div>
-      <button className="p-4 border text-white bg-blue-900 rounded-lg" onClick={handleSubmit}>
+      <button
+        className="p-4 border text-white bg-blue-900 rounded-lg"
+        onClick={handlePlaceOrder}
+      >
         Place Order
       </button>
     </div>

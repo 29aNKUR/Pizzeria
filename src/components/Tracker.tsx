@@ -1,5 +1,10 @@
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+
 
 const Tracker = () => {
+    const orders = useSelector((state: RootState) => state.pizza.orders);
+    const dispatch = useDispatch();
   return (
     <div>
       <h1 className="flex justify-center mt-10 font-bold text-3xl">Tracker</h1>

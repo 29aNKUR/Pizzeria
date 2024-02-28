@@ -15,7 +15,7 @@ const OrderForm = () => {
   };
 
   const handlePlaceOrder = () => {
-    if(orders.length > 10) {
+    if(orders.length < 10) {
       if(order.type && order.size && order.base) {
         dispatch(placeOrder(order));
         setOrder({type:"", size:"", base:""});
